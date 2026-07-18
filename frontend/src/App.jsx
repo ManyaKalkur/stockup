@@ -15,6 +15,9 @@ export default function App() {
   const [theme,setTheme]= useState('dark')
   const [symbol,setSymbol]= useState(null)
   const [tab,setTab]= useState('Chart')
+  useEffect(()=>{
+    document.documentElement.setAttribute('data-theme',theme)
+  },[theme])
   return (
     <div data-theme={theme}>
       <TickerTape/>
