@@ -11,7 +11,7 @@ export default function PredictTab({symbol}) {
     setLoading(true); setError(null); setData(null)
     getPrediction(symbol)
   .then(setData)
-  .catch(async (err) => {
+  .catch(async (err)=> {
     console.error(err);
     setError(err.response?.data?.detail || err.message);
   });
