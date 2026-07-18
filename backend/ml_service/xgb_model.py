@@ -1,4 +1,5 @@
 import importlib
+import pandas as pd
 from xgboost import XGBRegressor
 from ml_service.indicators import add_indicators
 
