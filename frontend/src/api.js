@@ -1,4 +1,4 @@
-const BASE= '/api'
+const BASE= import.meta.env.VITE_API_BASE || '/api'
 
 export async function searchTicker(symbol) {
   const res= await fetch(`${BASE}/data/search/${symbol}`)
@@ -19,7 +19,7 @@ export async function getPrediction(symbol) {
 }
 
 export async function ingest(symbol) {
-  const res= await fetch(`${BASE}/rag/ingest/${symbol}`,{ method:'POST' })
+  const res= await fetch(`${BASE}/rag/ingest/${symbol}`, { method:'POST'})
   if (!res.ok) throw new Error('failed to ingest')
   return res.json()
 }
@@ -37,6 +37,7 @@ export async function getReport(symbol) {
 }
 
 export function liveSocket(symbol) {
-  const proto= window.location.protocol=== 'https:'?'wss':'ws'
-  return new WebSocket(`${proto}://${window.location.host}/api/data/ws/${symbol}`)
+  const apiBase= import.meta.env.VITE_API_BASE || `${window.location.protocol}//${window.location.host}/api`
+  const wsBase= apiBase.replace(/^http/,'ws')
+  return new WebSocket(`${wsBase}/data/ws/${symbol}`)
 }
