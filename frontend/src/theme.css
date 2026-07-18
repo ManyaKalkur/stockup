@@ -1,0 +1,59 @@
+:root {
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --sand: #EEE59F;
+  --amber: #FFAE00;
+  --coral: #FD8951;
+  --up: #16C784;
+  --down: #EA3943;
+  --radius: 10px;
+}
+
+[data-theme='dark'] {
+  --bg: #15130F;
+  --surface: #201C15;
+  --surface-hover: #2A2419;
+  --text: #F3EFE3;
+  --text-dim: #A69C87;
+  --border: #3A331F;
+}
+
+[data-theme='light'] {
+  --bg: #FFFBF2;
+  --surface: #FFFFFF;
+  --surface-hover: #FFF6E0;
+  --text: #201C15;
+  --text-dim: #8A7F68;
+  --border: #EAE0C8;
+}
+
+* {
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body {
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  transition:background .2s,color .2s;
+}
+
+.mono {
+  font-family:var(--font-mono);
+}
+
+button {
+  font-family:var(--font-body);
+  cursor:pointer;
+  border:none;
+  background:none;
+  color:inherit;
+}
+
+::selection {
+  background:var(--amber);
+  color:#15130F;
+}
