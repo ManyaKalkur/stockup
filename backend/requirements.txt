@@ -13,3 +13,6 @@ numpy
 scikit-learn
 shap
 xgboost
+torch
+voyageai
+beautifulsoup4
