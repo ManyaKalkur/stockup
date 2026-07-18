@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './theme.css'
 import './app.css'
 import TickerTape from './components/TickerTape'
@@ -19,10 +19,10 @@ export default function App() {
     document.documentElement.setAttribute('data-theme',theme)
   },[theme])
   return (
-    <div data-theme={theme}>
+    <div>
       <TickerTape/>
       <header className="app-header">
-        <h1>Stock<span style={{color:'var(--amber)'}}>up</span></h1>
+        <h1>Stock<span style={{color:'var(--amber)'}}>Up</span></h1>
         <SearchBar onSelect={s=>{setSymbol(s); setTab('Chart')}}/>
         <ThemeToggle theme={theme} setTheme={setTheme}/>
       </header>
