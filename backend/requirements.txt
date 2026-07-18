@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+python-dotenv
+yfinance
+redis
+pinecone-client
+anthropic
+requests
+pandas
+numpy
+scikit-learn
+shap
+xgboost
