@@ -5,7 +5,7 @@ psycopg2-binary
 python-dotenv
 yfinance
 redis
-pinecone-client
+pinecone
 anthropic
 requests
 pandas
