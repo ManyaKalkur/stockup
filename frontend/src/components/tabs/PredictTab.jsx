@@ -2,17 +2,19 @@ import { useEffect, useState } from 'react'
 import { getPrediction } from '../../api'
 
 export default function PredictTab({symbol}) {
-  const [data,setData] = useState(null)
-  const [loading,setLoading] = useState(false)
-  const [error,setError] = useState(null)
+  const [data,setData]= useState(null)
+  const [loading,setLoading]= useState(false)
+  const [error,setError]= useState(null)
 
   useEffect(()=>{
     if (!symbol) return
     setLoading(true); setError(null); setData(null)
     getPrediction(symbol)
-      .then(setData)
-      .catch(()=>setError('not enough history to train on this ticker'))
-      .finally(()=>setLoading(false))
+  .then(setData)
+  .catch(async (err) => {
+    console.error(err);
+    setError(err.response?.data?.detail || err.message);
+  });
   },[symbol])
 
   if (!symbol) return <div className="empty-state">search a ticker to run predictions</div>
@@ -20,8 +22,8 @@ export default function PredictTab({symbol}) {
   if (error) return <div className="empty-state">{error}</div>
   if (!data) return null
 
-  const xgbDelta = data.xgb_prediction-data.last_close
-  const lstmDelta = data.lstm_prediction-data.last_close
+  const xgbDelta= data.xgb_prediction-data.last_close
+  const lstmDelta= data.lstm_prediction-data.last_close
 
   return (
     <div className="predict-tab">
