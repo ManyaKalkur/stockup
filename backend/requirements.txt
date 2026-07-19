@@ -6,7 +6,7 @@ python-dotenv
 yfinance
 redis
 pinecone
-anthropic
+groq
 requests
 pandas
 numpy

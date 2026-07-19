@@ -1,9 +1,14 @@
-import anthropic
+from groq import Groq
 from core.config import settings
 from rag_service.embed import embed_query
 from rag_service.pinecone_client import get_index
 
-client= anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+_client= None
+def get_client():
+	global _client
+	if _client is None:
+		_client= Groq(api_key=settings.GROQ_API_KEY)
+	return _client
 
 def ask(symbol:str, question:str, top_k=6):
 	index= get_index()
@@ -23,10 +28,10 @@ def ask(symbol:str, question:str, top_k=6):
 context:
 {context}
 question: {question}"""
-	response= client.messages.create(
-		model="claude-sonnet-4-6",
+	response= get_client().chat.completions.create(
+		model="llama-3.3-70b-versatile",
 		max_tokens=600,
 		messages=[{"role":"user","content":prompt}],
 	)
-	answer= "".join(b.text for b in response.content if b.type=="text")
+	answer= response.choices[0].message.content
 	return {"answer":answer,"sources":sources}

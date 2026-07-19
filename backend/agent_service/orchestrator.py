@@ -1,4 +1,4 @@
-import anthropic
+from groq import Groq
 from core.config import settings
 from data_service.prices import fetch_price_history
 from rag_service.embed import embed_query
@@ -8,7 +8,7 @@ _client= None
 def get_client():
 	global _client
 	if _client is None:
-		_client= anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+		_client= Groq(api_key=settings.GROQ_API_KEY)
 	return _client
 
 def gather_context(symbol:str):
@@ -53,12 +53,12 @@ recent news context:
 
 tie the technical signals and the news together into one coherent explanation of what's likely driving the stock and what the models expect next. flag if the models meaningfully disagree with each other."""
 
-	response= get_client().messages.create(
-		model="claude-sonnet-4-6",
+	response= get_client().chat.completions.create(
+		model="llama-3.3-70b-versatile",
 		max_tokens=400,
 		messages=[{"role":"user","content":prompt}],
 	)
-	summary= "".join(b.text for b in response.content if b.type=="text")
+	summary= response.choices[0].message.content
 	return {
 		"symbol": symbol.upper(),
 		"summary": summary,
