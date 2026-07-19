@@ -24,7 +24,7 @@ export default function ServerWakeGate({children}) {
   return (
     <div className="wake-gate">
       <div className="wake-spinner"/>
-      <p className="mono">{slow ? 'Waking the server up: First load can take ~30-60s' : 'connecting...'}</p>
+      <p className="mono">{slow ?'Waking the server up: First load can take ~30-60s':'connecting...'}</p>
     </div>
   )
 }
