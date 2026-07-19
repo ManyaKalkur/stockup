@@ -6,6 +6,17 @@ const LABELS= {
   linear_regression: 'Linear Regression',
   svm: 'SVM',
 }
+const FEATURE_INFO= {
+  sma_10: '10-Day Simple Moving Average (SMA). This is the average stock price over the last 10 days. It smooths out daily ups and downs to show the short-term trend. If the current price is above this line, the stock is generally moving upward.',
+  sma_30: '30-Day Simple Moving Average (SMA). This is the average stock price over the last 30 days. It reflects the longer-term trend. When the price moves above or below this average, it can indicate a significant change in direction.',
+  ema_10: '10-Day Exponential Moving Average (EMA). Similar to the moving average, but it gives more importance to recent prices. This makes it react faster to market changes than a Simple Moving Average.',
+  rsi_14: '14-Day Relative Strength Index (RSI). A momentum indicator that ranges from 0 to 100. Values above 70 may mean the stock has risen too quickly (overbought), while values below 30 may mean it has fallen too much (oversold).',
+  macd: 'Moving Average Convergence Divergence (MACD). A momentum indicator that compares two moving averages to show whether bullish or bearish momentum is strengthening or weakening.',
+  macd_signal: 'MACD Signal Line. This is a smoothed version of the MACD. When the MACD crosses above the signal line, it may suggest upward momentum. Crossing below may suggest downward momentum.',
+  volatility_10: '10-Day Volatility. Measures how much the stock price has been changing over the last 10 days. Higher volatility means larger price swings and greater uncertainty.',
+  return_1d: "1-Day Return. The percentage change in the stock's price compared with the previous trading day. It shows whether the stock gained or lost value yesterday.",
+  volume: 'Trading Volume. The total number of shares traded during the day. High trading volume usually means strong investor interest and often accompanies important price movements.'
+};
 
 export default function PredictTab({symbol}) {
   const [data,setData]= useState(null)
@@ -30,7 +41,7 @@ export default function PredictTab({symbol}) {
   return (
     <div className="predict-tab">
       <div className="last-close-banner">
-        <span className="label">last close</span>
+        <span className="label">Last Close</span>
         <span className="mono value big">${data.last_close.toFixed(2)}</span>
       </div>
 
@@ -53,7 +64,7 @@ export default function PredictTab({symbol}) {
       </div>
 
       <h3>What's driving the XGBoost Prediction</h3>
-      <p className="explain-note">Positive bars push the price up, negative bars pull it down. Sorted by strength.</p>
+      <p className="explain-note">Positive bars push the price up, negative bars pull it down; sorted by strength.</p>
       <div className="feature-list">
         {data.xgb_explanation.map(f=>{
           const up= f.impact>=0
@@ -70,6 +81,7 @@ export default function PredictTab({symbol}) {
                   style={{width:`${barWidth}%`,background:up?'var(--up)':'var(--down)'}}
                 />
               </div>
+              {FEATURE_INFO[f.feature] && <p className="feature-desc">{FEATURE_INFO[f.feature]}</p>}
             </div>
           )
         })}
