@@ -13,8 +13,11 @@ A stock analysis app. Live prices, price predictions from 4 different ML models 
 ## Tech stack
 
 **Backend:** FastAPI, PostgreSQL, SQLAlchemy, WebSockets
+
 **Machine learning:** XGBoost, scikit-learn, SHAP
+
 **RAG:** Pinecone, Voyage AI, NewsAPI, SEC EDGAR, Groq (Llama 3.3 70B)
+
 **Frontend:** React, Vite, Recharts
 
 ## Project structure
@@ -57,4 +60,7 @@ npm run dev
 
 ## Deployment
 
-Deployed on Render. PostgreSQL as a managed database, backend as a Web Service, frontend as a Static Site. Free tier services sleep after inactivity, so the first request can take 30-60 seconds. The app shows a loading screen during that time.
+Deployed on Render. 
+PostgreSQL as a managed database, backend as a Web Service, frontend as a Static Site.
+Free tier services sleep after inactivity, so the first request can take 30-60 seconds. 
+The app shows a loading screen during that time.
