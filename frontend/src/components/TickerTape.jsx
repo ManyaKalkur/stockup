@@ -23,7 +23,7 @@ export default function TickerTape() {
     const up= p && p.prevPrice!=null? p.price>=p.prevPrice: true
     return (
       <span key={`${prefix}-${symbol}`} className="ticker-item mono">
-        {symbol} <span style={{color:up?'var(--up)':'var(--down)'}}>{p? p.price.toFixed(2) : 'N/A'}</span>
+        {symbol} <span className="ticker-price" style={{color:up?'var(--up)':'var(--down)'}}>{p? p.price.toFixed(2):'N/A'}</span>
       </span>
     )
   })

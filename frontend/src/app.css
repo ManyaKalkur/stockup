@@ -18,6 +18,16 @@
 .ticker-item {
   font-size:13px;
   color:var(--text-dim);
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  min-width:100px;
+}
+ 
+.ticker-price {
+  display:inline-block;
+  min-width:56px;
+  text-align:right;
 }
 
 @keyframes scroll-left {
@@ -346,4 +356,65 @@ button:focus-visible, input:focus-visible {
 
 .wake-gate p {
   font-size:13px;
+}
+ 
+.predict-tab h3 {
+  font-size:14px;
+  margin:24px 0 6px;
+  color:var(--text-dim);
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+ 
+.last-close-banner {
+  display:flex;
+  align-items:baseline;
+  gap:12px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:18px 20px;
+  margin-bottom:8px;
+}
+ 
+.value.big {
+  font-size:26px;
+}
+ 
+.predict-card {
+  position:relative;
+}
+ 
+.delta {
+  font-size:12px;
+}
+ 
+.explain-note {
+  font-size:12px;
+  color:var(--text-dim);
+  margin-bottom:14px;
+}
+ 
+.feature-row-top {
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+  margin-bottom:6px;
+}
+ 
+.feature-name {
+  color:var(--text-dim);
+}
+ 
+.feature-bar-track {
+  height:6px;
+  background:var(--border);
+  border-radius:4px;
+  overflow:hidden;
+}
+ 
+.feature-bar-fill {
+  height:100%;
+  border-radius:4px;
+  transition:width .3s ease;
 }
