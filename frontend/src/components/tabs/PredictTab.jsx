@@ -33,7 +33,7 @@ export default function PredictTab({symbol}) {
   const [data,setData]= useState(null)
   const [loading,setLoading]= useState(false)
   const [error,setError]= useState(null)
-
+  const [openFeature,setOpenFeature] = useState(null)
   useEffect(()=>{
     if (!symbol) return
     setLoading(true); setError(null); setData(null)
@@ -42,13 +42,22 @@ export default function PredictTab({symbol}) {
       .catch(()=>setError('not enough history to train on this ticker'))
       .finally(()=>setLoading(false))
   },[symbol])
+  useEffect(()=>{
+    const closeAll= ()=> setOpenFeature(null)
+    window.addEventListener('click',closeAll)
+    return ()=> window.removeEventListener('click',closeAll)
+  },[])
 
   if (!symbol) return <div className="empty-state">search a ticker to run predictions</div>
   if (loading) return <div className="empty-state">training models on {symbol}...</div>
   if (error) return <div className="empty-state">{error}</div>
   if (!data) return null
   const maxImpact= Math.max(...data.xgb_explanation.map(f=>Math.abs(f.impact)))
-
+  function toggleFeature(key,e) {
+    e.stopPropagation()
+    setOpenFeature(prev=> prev===key ? null : key)
+  }
+  
   return (
     <div className="predict-tab">
       <div className="last-close-banner">
