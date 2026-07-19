@@ -319,3 +319,31 @@ button:focus-visible, input:focus-visible {
     grid-template-columns:1fr;
   }
 }
+
+.wake-gate {
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  background:var(--bg);
+  color:var(--text-dim);
+}
+
+.wake-spinner {
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  border:3px solid var(--border);
+  border-top-color:var(--amber);
+  animation:spin .8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform:rotate(360deg); }
+}
+
+.wake-gate p {
+  font-size:13px;
+}

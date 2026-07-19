@@ -4,6 +4,7 @@ import './app.css'
 import TickerTape from './components/TickerTape'
 import SearchBar from './components/SearchBar'
 import ThemeToggle from './components/ThemeToggle'
+import ServerWakeGate from './components/ServerWakeGate'
 import ChartTab from './components/tabs/ChartTab'
 import PredictTab from './components/tabs/PredictTab'
 import AskTab from './components/tabs/AskTab'
@@ -20,25 +21,27 @@ export default function App() {
   },[theme])
   return (
     <div>
-      <TickerTape/>
-      <header className="app-header">
-        <h1>Stock<span style={{color:'var(--amber)'}}>Up</span></h1>
-        <SearchBar onSelect={s=>{setSymbol(s); setTab('Chart')}}/>
-        <ThemeToggle theme={theme} setTheme={setTheme}/>
-      </header>
+      <ServerWakeGate>
+        <TickerTape/>
+        <header className="app-header">
+          <h1>Stock<span style={{color:'var(--amber)'}}>Up</span></h1>
+          <SearchBar onSelect={s=>{setSymbol(s); setTab('Chart')}}/>
+          <ThemeToggle theme={theme} setTheme={setTheme}/>
+        </header>
 
-      <nav className="tab-bar">
-        {TABS.map(t=>(
-          <button key={t} className={tab===t?'tab active':'tab'} onClick={()=>setTab(t)}>{t}</button>
-        ))}
-      </nav>
+        <nav className="tab-bar">
+          {TABS.map(t=>(
+            <button key={t} className={tab===t?'tab active':'tab'} onClick={()=>setTab(t)}>{t}</button>
+          ))}
+        </nav>
 
-      <main className="app-main">
-        {tab==='Chart' && <ChartTab symbol={symbol}/>}
-        {tab==='Predict' && <PredictTab symbol={symbol}/>}
-        {tab==='Ask' && <AskTab symbol={symbol}/>}
-        {tab==='Report' && <ReportTab symbol={symbol}/>}
-      </main>
+        <main className="app-main">
+          {tab==='Chart' && <ChartTab symbol={symbol}/>}
+          {tab==='Predict' && <PredictTab symbol={symbol}/>}
+          {tab==='Ask' && <AskTab symbol={symbol}/>}
+          {tab==='Report' && <ReportTab symbol={symbol}/>}
+        </main>
+      </ServerWakeGate>
     </div>
   )
 }

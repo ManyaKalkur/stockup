@@ -1,5 +1,12 @@
 const BASE= import.meta.env.VITE_API_BASE || '/api'
 
+export async function pingHealth() {
+  const healthUrl= BASE.replace(/\/api$/,'')+'/health'
+  const res= await fetch(healthUrl)
+  if (!res.ok) throw new Error('not ready')
+  return res.json()
+}
+
 export async function searchTicker(symbol) {
   const res= await fetch(`${BASE}/data/search/${symbol}`)
   if (!res.ok) throw new Error('not found')
