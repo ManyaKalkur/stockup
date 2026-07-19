@@ -18,11 +18,11 @@ export default function TickerTape() {
     return ()=> sockets.forEach(ws=>ws.close())
   },[])
 
-  const items= WATCHLIST.map(symbol=>{
+  const renderItems= (prefix)=> WATCHLIST.map(symbol=>{
     const p= prices[symbol]
-    const up= p && p.prevPrice!=null ? p.price>=p.prevPrice:true
+    const up= p && p.prevPrice!=null? p.price>=p.prevPrice: true
     return (
-      <span key={symbol} className="ticker-item mono">
+      <span key={`${prefix}-${symbol}`} className="ticker-item mono">
         {symbol} <span style={{color:up?'var(--up)':'var(--down)'}}>{p? p.price.toFixed(2) : 'N/A'}</span>
       </span>
     )
@@ -30,7 +30,7 @@ export default function TickerTape() {
 
   return (
     <div className="ticker-tape">
-      <div className="ticker-track">{items}{items}</div>
+      <div className="ticker-track">{renderItems('a')}{renderItems('b')}</div>
     </div>
   )
 }
