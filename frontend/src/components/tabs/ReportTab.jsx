@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react'
 import { getReport } from '../../api'
+const LABELS = {
+  xgboost: 'xgboost',
+  random_forest: 'random forest',
+  linear_regression: 'linear regression',
+  svm: 'svm',
+}
 
 export default function ReportTab({symbol}) {
   const [data,setData]= useState(null)
@@ -19,7 +25,8 @@ export default function ReportTab({symbol}) {
   if (loading) return <div className="empty-state">pulling price data, running models, reading recent news...</div>
   if (error) return <div className="empty-state">{error}</div>
   if (!data) return null
-  const disagree= Math.sign(data.xgb_prediction-data.last_close) !== Math.sign(data.lstm_prediction-data.last_close)
+  const values= Object.values(data.predictions)
+  const disagree= values.some(v=>Math.sign(v-data.last_close) !== Math.sign(values[0]-data.last_close))
 
   return (
     <div className="report-tab">
@@ -30,14 +37,12 @@ export default function ReportTab({symbol}) {
           <span className="label">last close</span>
           <span className="mono value">${data.last_close.toFixed(2)}</span>
         </div>
-        <div className="predict-card">
-          <span className="label">xgboost</span>
-          <span className="mono value">${data.xgb_prediction.toFixed(2)}</span>
-        </div>
-        <div className="predict-card">
-          <span className="label">lstm</span>
-          <span className="mono value">${data.lstm_prediction.toFixed(2)}</span>
-        </div>
+        {Object.entries(data.predictions).map(([key,val])=>(
+          <div key={key} className="predict-card">
+            <span className="label">{LABELS[key] || key}</span>
+            <span className="mono value">${val.toFixed(2)}</span>
+          </div>
+        ))}
       </div>
     </div>
   )
