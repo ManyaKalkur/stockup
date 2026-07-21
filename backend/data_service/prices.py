@@ -1,12 +1,20 @@
 import yfinance as yf
 from sqlalchemy.orm import Session
+from tenacity import retry, stop_after_attempt, wait_exponential
 from models.db_models import Ticker, PriceHistory
+ 
+RETRY= dict(stop=stop_after_attempt(3),wait=wait_exponential(multiplier=1,min=1,max=6))
+@retry(**RETRY)
+def _fetch_info(query:str):
+	return yf.Ticker(query).info
+@retry(**RETRY)
+def _fetch_history(symbol:str,period:str,interval:str):
+	return yf.Ticker(symbol).history(period=period,interval=interval)
 
 def search_ticker(query:str):
 	# yfinance has no clean search api, use Ticker.info as a lookup/validate step
 	try:
-		t= yf.Ticker(query)
-		info= t.info
+		info= _fetch_info(query)
 		if not info or info.get("regularMarketPrice") is None:
 			return None
 		return {
@@ -31,8 +39,10 @@ def get_or_create_ticker(db:Session, symbol:str):
 	return ticker
 
 def fetch_price_history(symbol:str,period="6mo",interval="1d"):
-	t= yf.Ticker(symbol)
-	hist= t.history(period=period,interval=interval)
+	try:
+		hist= _fetch_history(symbol,period,interval)
+	except Exception:
+		return []
 	if hist.empty:
 		return []
 	hist= hist.reset_index()

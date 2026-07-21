@@ -1,13 +1,27 @@
 import requests
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 from core.config import settings
 
 HEADERS= {"User-Agent": settings.SEC_EDGAR_USER_AGENT}
 
+@retry(
+	stop=stop_after_attempt(3),
+	wait=wait_exponential(multiplier=1,min=1,max=6),
+	retry=retry_if_exception_type(requests.exceptions.RequestException),
+)
+def _get(url:str,params:dict=None,timeout:int=10):
+	resp= requests.get(url,params=params,headers=HEADERS,timeout=timeout)
+	resp.raise_for_status()
+	return resp
+
 def get_cik(symbol:str):
 	url= "https://www.sec.gov/cgi-bin/browse-edgar"
 	params= {"action":"getcompany","company":symbol,"type":"10-K","dateb":"","owner":"include","count":"1","output":"atom"}
-	resp= requests.get(url,params=params,headers=HEADERS,timeout=10)
-	if resp.status_code != 200 or "CIK=" not in resp.text:
+	try:
+		resp= _get(url,params)
+	except requests.exceptions.RequestException:
+		return None
+	if "CIK=" not in resp.text:
 		return None
 	start= resp.text.find("CIK=")+4
 	return resp.text[start:start+10].split("&")[0]
@@ -18,8 +32,9 @@ def fetch_recent_filings(symbol:str, limit=5):
 		return []
 	cik_padded= cik.zfill(10)
 	url= f"https://data.sec.gov/submissions/CIK{cik_padded}.json"
-	resp= requests.get(url,headers=HEADERS,timeout=10)
-	if resp.status_code != 200:
+	try:
+		resp= _get(url)
+	except requests.exceptions.RequestException:
 		return []
 	recent= resp.json().get("filings",{}).get("recent",{})
 	forms= recent.get("form",[])
@@ -39,8 +54,9 @@ def fetch_recent_filings(symbol:str, limit=5):
 
 def fetch_filing_text(filing_url:str, max_chars=8000):
 	from bs4 import BeautifulSoup
-	resp= requests.get(filing_url,headers=HEADERS,timeout=15)
-	if resp.status_code != 200:
+	try:
+		resp= _get(filing_url,timeout=15)
+	except requests.exceptions.RequestException:
 		return ""
 	soup= BeautifulSoup(resp.text,"html.parser")
 	text= soup.get_text(separator=" ",strip=True)
