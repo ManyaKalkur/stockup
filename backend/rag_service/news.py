@@ -1,6 +1,7 @@
 import requests
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 from core.config import settings
+from core.cache import cached
 
 @retry(
 	stop=stop_after_attempt(3),
@@ -12,6 +13,7 @@ def _get(url:str,params:dict):
 	resp.raise_for_status()
 	return resp
 
+@cached(ttl_seconds=300)
 def fetch_news(company_name:str, limit=15):
 	url= "https://newsapi.org/v2/everything"
 	params= {
