@@ -37,6 +37,12 @@ export async function askQuestion(symbol, question) {
   return res.json()
 }
 
+export async function getAccuracy(symbol) {
+  const res= await fetch(`${BASE}/ml/accuracy/${symbol}`)
+  if (!res.ok) throw new Error('failed to load accuracy')
+  return res.json()
+}
+
 export async function getReport(symbol) {
   const res= await fetch(`${BASE}/agent/report/${symbol}`)
   if (!res.ok) throw new Error('failed to generate report')

@@ -9,8 +9,10 @@ import ChartTab from './components/tabs/ChartTab'
 import PredictTab from './components/tabs/PredictTab'
 import AskTab from './components/tabs/AskTab'
 import ReportTab from './components/tabs/ReportTab'
+import TrendingGrid from './components/TrendingGrid'
+import TrackRecordTab from './components/tabs/TrackRecordTab'
 
-const TABS= ['Chart','Predict','Ask','Report']
+const TABS= ['Chart','Predict','Ask','Report','Track Record']
 
 export default function App() {
   const [theme,setTheme]= useState('dark')
@@ -28,19 +30,26 @@ export default function App() {
           <SearchBar onSelect={s=>{setSymbol(s); setTab('Chart')}}/>
           <ThemeToggle theme={theme} setTheme={setTheme}/>
         </header>
-
-        <nav className="tab-bar">
-          {TABS.map(t=>(
-            <button key={t} className={tab===t?'tab active':'tab'} onClick={()=>setTab(t)}>{t}</button>
-          ))}
-        </nav>
-
-        <main className="app-main">
-          {tab==='Chart' && <ChartTab symbol={symbol}/>}
-          {tab==='Predict' && <PredictTab symbol={symbol}/>}
-          {tab==='Ask' && <AskTab symbol={symbol}/>}
-          {tab==='Report' && <ReportTab symbol={symbol}/>}
-        </main>
+        {symbol?(
+          <>
+            <nav className="tab-bar">
+              {TABS.map(t=>(
+                <button key={t} className={tab===t?'tab active':'tab'} onClick={()=>setTab(t)}>{t}</button>
+              ))}
+            </nav>
+            <main className="app-main">
+              {tab==='Chart' && <ChartTab symbol={symbol}/>}
+              {tab==='Predict' && <PredictTab symbol={symbol}/>}
+              {tab==='Ask' && <AskTab symbol={symbol}/>}
+              {tab==='Report' && <ReportTab symbol={symbol}/>}
+              {tab==='Track Record' && <TrackRecordTab symbol={symbol}/>}
+            </main>
+          </>
+        ):(
+          <main className="app-main">
+            <TrendingGrid onSelect={s=>{setSymbol(s); setTab('Chart')}}/>
+          </main>
+        )}
       </ServerWakeGate>
     </div>
   )
