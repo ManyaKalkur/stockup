@@ -2,7 +2,7 @@ import asyncio
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 from core.database import get_db
-from data_service.prices import get_or_create_ticker, fetch_price_history, cache_price_history
+from data_service.prices import get_or_create_ticker, fetch_price_history, cache_price_history, serialize_price_rows
 from data_service.live import manager, price_poll_loop
 
 router= APIRouter()
@@ -21,7 +21,7 @@ def prices(symbol:str, period:str="6mo", db:Session=Depends(get_db)):
 		raise HTTPException(404,f"couldn't find {symbol}")
 	rows= fetch_price_history(symbol,period=period)
 	cache_price_history(db,ticker,rows)
-	return {"symbol":symbol.upper(),"rows":rows}
+	return {"symbol":symbol.upper(),"rows":serialize_price_rows(rows)}
 
 @router.websocket("/ws/{symbol}")
 async def price_ws(ws:WebSocket, symbol:str):

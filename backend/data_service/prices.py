@@ -59,6 +59,21 @@ def fetch_price_history(symbol:str,period="6mo",interval="1d"):
 		})
 	return rows
 
+def serialize_price_rows(rows:list):
+	"""Convert pandas/NumPy provider values into JSON-compatible API values."""
+	serialized= []
+	for row in rows:
+		date= row["date"]
+		serialized.append({
+			"date": date.isoformat() if hasattr(date,"isoformat") else str(date),
+			"open": float(row["open"]),
+			"high": float(row["high"]),
+			"low": float(row["low"]),
+			"close": float(row["close"]),
+			"volume": float(row["volume"]),
+		})
+	return serialized
+
 def cache_price_history(db:Session, ticker:Ticker, rows:list):
 	existing_dates= {p.date for p in db.query(PriceHistory).filter(PriceHistory.ticker_id==ticker.id).all()}
 	new_rows= [r for r in rows if r["date"] not in existing_dates]

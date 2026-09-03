@@ -16,11 +16,14 @@ class ConnectionManager:
 				del self.active[symbol]
 
 	async def broadcast(self, symbol:str, data:dict):
-		for ws in self.active.get(symbol,[]):
+		failed= []
+		for ws in self.active.get(symbol,[])[:]:
 			try:
 				await ws.send_json(data)
 			except Exception:
-				pass
+				failed.append(ws)
+		for ws in failed:
+			self.disconnect(symbol,ws)
 
 manager = ConnectionManager()
 
@@ -28,7 +31,7 @@ async def price_poll_loop(symbol:str, interval:int=5):
 	t= yf.Ticker(symbol)
 	while symbol in manager.active:
 		try:
-			price= t.fast_info["last_price"]
+			price= await asyncio.to_thread(lambda: t.fast_info["last_price"])
 			await manager.broadcast(symbol,{"symbol":symbol,"price":price})
 		except Exception:
 			pass
