@@ -1,3 +1,4 @@
+import logging
 from groq import Groq
 from core.config import settings
 from data_service.prices import fetch_price_history
@@ -5,6 +6,7 @@ from rag_service.embed import embed_query
 from rag_service.pinecone_client import get_index
 
 _client= None
+logger= logging.getLogger(__name__)
 def get_client():
 	global _client
 	if _client is None:
@@ -21,10 +23,14 @@ def gather_context(symbol:str):
 	if not result:
 		return None
 	explanation= explain_model(result["xgb_model"], result["xgb_features"])
-	index= get_index()
-	q_emb= embed_query(f"recent news and events affecting {symbol} stock price")
-	results= index.query(vector=q_emb,top_k=8,namespace=symbol.upper(),include_metadata=True)
-	news_chunks= [m["metadata"]["text"] for m in results.get("matches",[])]
+	news_chunks= []
+	try:
+		index= get_index()
+		q_emb= embed_query(f"recent news and events affecting {symbol} stock price")
+		results= index.query(vector=q_emb,top_k=8,namespace=symbol.upper(),include_metadata=True)
+		news_chunks= [m["metadata"]["text"] for m in results.get("matches",[])]
+	except Exception:
+		logger.exception("Could not retrieve report context for %s",symbol)
 	return {
 		"last_close": result["last_close"],
 		"predictions": result["predictions"],
