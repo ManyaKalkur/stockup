@@ -6,14 +6,20 @@ export default function ChartTab({symbol}) {
   const [rows,setRows]= useState([])
   const [live,setLive]= useState(null)
   const [loading,setLoading]= useState(true)
+  const [error,setError]= useState(null)
 
   useEffect(()=>{
     if (!symbol) return
     setLoading(true)
+    setError(null)
+    setRows([])
     getPrices(symbol).then(data=>{
       setRows(data.rows.map(r=>({date:r.date.slice(0,10),close:r.close})))
       setLoading(false)
-    }).catch(()=>setLoading(false))
+    }).catch(()=>{
+      setError('Could not load price history. Please try again.')
+      setLoading(false)
+    })
 
     const ws = liveSocket(symbol)
     ws.onmessage= e=> setLive(JSON.parse(e.data).price)
@@ -22,6 +28,8 @@ export default function ChartTab({symbol}) {
 
   if (!symbol) return <div className="empty-state">search a ticker to see its chart</div>
   if (loading) return <div className="empty-state">loading {symbol}...</div>
+  if (error) return <div className="empty-state">{error}</div>
+  if (!rows.length) return <div className="empty-state">No price history is available for {symbol}.</div>
   const last= rows[rows.length-1]
   const up= last && live!=null ? live>=last.close : true
 
