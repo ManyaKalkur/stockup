@@ -23,6 +23,7 @@ export default function App() {
   const [theme,setTheme]= useState('dark')
   const [symbol,setSymbol]= useState(()=>localStorage.getItem(SYMBOL_KEY))
   const [tab,setTab]= useState(savedTab)
+  const [marketPrices,setMarketPrices]= useState({})
   useEffect(()=>{
     document.documentElement.setAttribute('data-theme',theme)
   },[theme])
@@ -40,7 +41,7 @@ export default function App() {
   return (
     <div>
       <ServerWakeGate>
-        <TickerTape/>
+        <TickerTape onPricesChange={setMarketPrices}/>
         <header className="app-header">
           <button className="home-link" onClick={goHome} aria-label="Go to StockUp home">
             <span>Stock<span style={{color:'var(--amber)'}}>Up</span></span>
@@ -65,7 +66,7 @@ export default function App() {
           </>
         ):(
           <main className="app-main">
-            <TrendingGrid onSelect={s=>{setSymbol(s); setTab('Chart')}}/>
+            <TrendingGrid prices={marketPrices} onSelect={s=>{setSymbol(s); setTab('Chart')}}/>
           </main>
         )}
       </ServerWakeGate>

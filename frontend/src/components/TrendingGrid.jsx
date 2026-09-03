@@ -1,22 +1,6 @@
-import { useEffect, useState } from 'react'
-import { liveSocket } from '../api'
-
 const TRENDING= ['AAPL','NVDA','TSLA','MSFT','AMZN','GOOGL','META','AMD']
 
-export default function TrendingGrid({onSelect}) {
-  const [prices,setPrices]= useState({})
-  useEffect(()=>{
-    const sockets= TRENDING.map(symbol=>{
-      const ws= liveSocket(symbol)
-      ws.onmessage= (e)=>{
-        const data= JSON.parse(e.data)
-        setPrices(prev=>({...prev,[symbol]:{price:data.price,prevPrice:prev[symbol]?.price}}))
-      }
-      return ws
-    })
-    return ()=> sockets.forEach(ws=>ws.close())
-  },[])
-
+export default function TrendingGrid({prices,onSelect}) {
   return (
     <div className="trending-wrap">
       <h2>Trending Stocks</h2>

@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react'
 import { liveSocket } from '../api'
 
-const WATCHLIST= ['AAPL','NVDA','TSLA','MSFT','AMZN','GOOGL']
+const TAPE_SYMBOLS= ['AAPL','NVDA','TSLA','MSFT','AMZN','GOOGL']
+const STREAMED_SYMBOLS= [...TAPE_SYMBOLS,'META','AMD']
 
-export default function TickerTape() {
+export default function TickerTape({onPricesChange}) {
   const [prices,setPrices]= useState({})
 
   useEffect(()=>{
-    const sockets= WATCHLIST.map(symbol=>{
+    onPricesChange(prices)
+  },[onPricesChange,prices])
+  useEffect(()=>{
+    const sockets= STREAMED_SYMBOLS.map(symbol=>{
       const ws= liveSocket(symbol)
       ws.onmessage= (e)=>{
         const data= JSON.parse(e.data)
@@ -15,10 +19,14 @@ export default function TickerTape() {
       }
       return ws
     })
-    return ()=> sockets.forEach(ws=>ws.close())
-  },[])
+    return ()=> sockets.forEach(ws=>{
+      ws.onmessage= null
+      if (ws.readyState===WebSocket.OPEN) ws.close()
+      else if (ws.readyState===WebSocket.CONNECTING) ws.onopen= ()=>ws.close()
+    })
+  },[onPricesChange])
 
-  const renderItems= (prefix)=> WATCHLIST.map(symbol=>{
+  const renderItems= (prefix)=> TAPE_SYMBOLS.map(symbol=>{
     const p= prices[symbol]
     const up= p && p.prevPrice!=null? p.price>=p.prevPrice: true
     return (
