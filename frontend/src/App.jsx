@@ -13,14 +13,26 @@ import TrendingGrid from './components/TrendingGrid'
 import TrackRecordTab from './components/tabs/TrackRecordTab'
 
 const TABS= ['Chart','Predict','Ask','Report','Track Record']
-
+const SYMBOL_KEY= 'stockup-selected-symbol'
+const TAB_KEY= 'stockup-selected-tab'
+function savedTab() {
+  const tab= localStorage.getItem(TAB_KEY)
+  return TABS.includes(tab) ? tab : 'Chart'
+}
 export default function App() {
   const [theme,setTheme]= useState('dark')
-  const [symbol,setSymbol]= useState(null)
-  const [tab,setTab]= useState('Chart')
+  const [symbol,setSymbol]= useState(()=>localStorage.getItem(SYMBOL_KEY))
+  const [tab,setTab]= useState(savedTab)
   useEffect(()=>{
     document.documentElement.setAttribute('data-theme',theme)
   },[theme])
+  useEffect(()=>{
+    if (symbol) localStorage.setItem(SYMBOL_KEY,symbol)
+    else localStorage.removeItem(SYMBOL_KEY)
+  },[symbol])
+  useEffect(()=>{
+    localStorage.setItem(TAB_KEY,tab)
+  },[tab])
   return (
     <div>
       <ServerWakeGate>
