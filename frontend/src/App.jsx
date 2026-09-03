@@ -33,12 +33,18 @@ export default function App() {
   useEffect(()=>{
     localStorage.setItem(TAB_KEY,tab)
   },[tab])
+  function goHome() {
+    setSymbol(null)
+    setTab('Chart')
+  }
   return (
     <div>
       <ServerWakeGate>
         <TickerTape/>
         <header className="app-header">
-          <h1>Stock<span style={{color:'var(--amber)'}}>Up</span></h1>
+          <button className="home-link" onClick={goHome} aria-label="Go to StockUp home">
+            <span>Stock<span style={{color:'var(--amber)'}}>Up</span></span>
+          </button>
           <SearchBar onSelect={s=>{setSymbol(s); setTab('Chart')}}/>
           <ThemeToggle theme={theme} setTheme={setTheme}/>
         </header>
