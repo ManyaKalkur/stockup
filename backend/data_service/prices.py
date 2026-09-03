@@ -76,7 +76,18 @@ def serialize_price_rows(rows:list):
 
 def cache_price_history(db:Session, ticker:Ticker, rows:list):
 	existing_dates= {p.date for p in db.query(PriceHistory).filter(PriceHistory.ticker_id==ticker.id).all()}
-	new_rows= [r for r in rows if r["date"] not in existing_dates]
+	normalized_rows= []
+	for row in rows:
+		date= row["date"]
+		normalized_rows.append({
+			"date": date.to_pydatetime() if hasattr(date,"to_pydatetime") else date,
+			"open": float(row["open"]),
+			"high": float(row["high"]),
+			"low": float(row["low"]),
+			"close": float(row["close"]),
+			"volume": float(row["volume"]),
+		})
+	new_rows= [row for row in normalized_rows if row["date"] not in existing_dates]
 	for r in new_rows:
 		db.add(PriceHistory(ticker_id=ticker.id,**r))
 	db.commit()
