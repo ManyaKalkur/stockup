@@ -6,11 +6,21 @@ export default function AskTab({symbol}) {
   const [answer,setAnswer]= useState(null)
   const [loading,setLoading]= useState(false)
   const [indexing,setIndexing]= useState(false)
+  const [indexStatus,setIndexStatus]= useState(null)
 
   async function handleIndex() {
     setIndexing(true)
-    await ingest(symbol).catch(()=>{})
-    setIndexing(false)
+    setIndexStatus(null)
+    try {
+      const result= await ingest(symbol)
+      setIndexStatus(result.chunks_indexed>0
+        ? `Indexed ${result.chunks_indexed} news and filing passages.`
+        : 'No new news or filings were available to index.')
+    } catch {
+      setIndexStatus('Indexing failed. Please try again in a moment.')
+    } finally {
+      setIndexing(false)
+    }
   }
 
   async function handleAsk(e) {
@@ -27,7 +37,10 @@ export default function AskTab({symbol}) {
   return (
     <div className="ask-tab">
       <div className="ask-index-row">
-        <span className="label">indexed news + filings power this; refresh if answers feel stale</span>
+        <div>
+          <span className="label">indexed news + filings power this; refresh if answers feel stale</span>
+          {indexStatus && <div className="index-status">{indexStatus}</div>}
+        </div>
         <button onClick={handleIndex} disabled={indexing}>{indexing?'indexing...':'index latest data'}</button>
       </div>
 
