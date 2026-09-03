@@ -1,11 +1,14 @@
 import asyncio
+import logging
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 from core.database import get_db
 from data_service.prices import get_or_create_ticker, fetch_price_history, cache_price_history, serialize_price_rows
 from data_service.live import manager, price_poll_loop
 
 router= APIRouter()
+logger= logging.getLogger(__name__)
 
 @router.get("/search/{symbol}")
 def search(symbol:str, db:Session=Depends(get_db)):
@@ -16,11 +19,16 @@ def search(symbol:str, db:Session=Depends(get_db)):
 
 @router.get("/prices/{symbol}")
 def prices(symbol:str, period:str="6mo", db:Session=Depends(get_db)):
-	ticker= get_or_create_ticker(db,symbol)
-	if not ticker:
-		raise HTTPException(404,f"couldn't find {symbol}")
 	rows= fetch_price_history(symbol,period=period)
-	cache_price_history(db,ticker,rows)
+	if not rows:
+		raise HTTPException(404,f"couldn't find price history for {symbol}")
+	try:
+		ticker= get_or_create_ticker(db,symbol)
+		if ticker:
+			cache_price_history(db,ticker,rows)
+	except SQLAlchemyError:
+		db.rollback()
+		logger.exception("Could not cache price history for %s",symbol)
 	return {"symbol":symbol.upper(),"rows":serialize_price_rows(rows)}
 
 @router.websocket("/ws/{symbol}")
